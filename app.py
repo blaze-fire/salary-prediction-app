@@ -18,13 +18,13 @@ from flask_migrate import Migrate, migrate
 app = Flask(__name__)
 
 # adding configuration for using a sqlite database
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 
-uri = os.getenv("DATABASE_URL")  # or other relevant config var
-if uri and uri.startswith("postgres://"):
-    uri = uri.replace("postgres://", "postgresql://", 1)
+# uri = os.getenv("DATABASE_URL")  # or other relevant config var
+# if uri and uri.startswith("postgres://"):
+#     uri = uri.replace("postgres://", "postgresql://", 1)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = uri
+# app.config['SQLALCHEMY_DATABASE_URI'] = uri
 
 
 # Creating an SQLAlchemy instance
@@ -72,7 +72,8 @@ def glove_embedded(X, col,train_data):
 
 
 #load model
-xgb_model = pickle.load(open('models/xgb_model.sav', 'rb'))
+lgbmreg = pickle.load(open('models/lgbreg.sav', 'rb'))
+
 
 @app.route('/')
 def home():
@@ -107,17 +108,17 @@ def predict():
     db.session.add(p)
     db.session.commit()
 
-    # input_df = Preprocess()(input_df)
+    input_df = Preprocess()(input_df)
 
-    # train_data = input_df.select_dtypes(exclude='object').values
+    train_data = input_df.select_dtypes(exclude='object').values
     
-    # for col in input_df.select_dtypes(include='object').columns:
-    #     train_data = glove_embedded(input_df, col, train_data)
+    for col in input_df.select_dtypes(include='object').columns:
+        train_data = glove_embedded(input_df, col, train_data)
 
-    # pred = xgb_model.predict(train_data)
-    # prediction = np.round(np.exp(pred), 2)
-    prediction = 0
-    return render_template('index.html', prediction_text='Your predicted annual salary is {}'.format(prediction))
+    pred = lgbmreg.predict(train_data[:, :159])
+    prediction = np.round(np.exp(pred), 2)
+
+    return render_template('index.html', prediction_text='Your predicted annual salary is {}'.format(prediction[0]))
 
 if __name__ == '__main__':
  app.run(debug=True)
