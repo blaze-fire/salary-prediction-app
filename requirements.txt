@@ -66,7 +66,6 @@ keyring==23.4.0
 kiwisolver==1.4.2
 lazy-object-proxy==1.6.0
 lightgbm==3.3.2
-mamba==0.15.3
 MarkupSafe==2.1.1
 matplotlib==3.5.2
 matplotlib-inline==0.1.2
