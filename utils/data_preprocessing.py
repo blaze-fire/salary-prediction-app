@@ -60,26 +60,6 @@ class Preprocess:
         return df
 
 
-
-    def calc_experience(self, df):
-        df['experience'].fillna('', inplace = True)
-
-        experience_list = []
-        for j in range(len(df)):
-
-            if re.findall(r'\d+ year', df['experience'][j]):
-                experience_list.append(re.search(r'\d+ year', df['experience'][j]).group()[0])
-
-            else:
-                experience_list.append('')
-
-        df['net_experience'] = experience_list
-        df['net_experience'] = pd.to_numeric(df['net_experience'])
-                
-        return df
-
-
-
     #Educational criteria mentioned by these companies can also be useful
     def education(self, df):
 
@@ -87,10 +67,7 @@ class Preprocess:
         education_dict = {'bachelor':1, 'master':2, 'graduate':3}
         for j in range(len(df)):
             
-            if re.findall(r'(graduate|bachelor|master)', df['experience'][j].lower()):
-                education_list.append( education_dict[re.search(r'(graduate|bachelor|master)', df['experience'][j].lower()).group()] )
-            
-            elif re.findall(r'(graduate|bachelor|master)', df['requirements'][j].lower()):
+            if re.findall(r'(graduate|bachelor|master)', df['requirements'][j].lower()):
                 education_list.append( education_dict[re.search(r'(graduate|bachelor|master)', df['requirements'][j].lower()).group()] )
             
             else:
@@ -206,14 +183,13 @@ class Preprocess:
         df['requirements'] = df['requirements'].fillna('')
         df['requirements'] = df['requirements'].apply(lambda x: self.preprocess_text(str(x)))
         df['job_descr_len'] = df['requirements'].apply(lambda x: 0 if not x else len(x))
-        df.drop(['experience', 'Location'], axis=1, inplace=True)
+        df.drop(['Location'], axis=1, inplace=True)
 
         return df
     
     def __call__(self, df):
         df = self.clean_data(df)
         df = self.work_location(df)
-        df = self.calc_experience(df)
         df = self.education(df)
         df = self.seniority(df)
         df = self.get_states(df)

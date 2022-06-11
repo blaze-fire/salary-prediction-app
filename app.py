@@ -18,13 +18,13 @@ from flask_migrate import Migrate, migrate
 app = Flask(__name__)
 
 # adding configuration for using a sqlite database
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 
-uri = os.getenv("DATABASE_URL")  # or other relevant config var
-if uri and uri.startswith("postgres://"):
-    uri = uri.replace("postgres://", "postgresql://", 1)
+# uri = os.getenv("DATABASE_URL")  # or other relevant config var
+# if uri and uri.startswith("postgres://"):
+#     uri = uri.replace("postgres://", "postgresql://", 1)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = uri
+# app.config['SQLALCHEMY_DATABASE_URI'] = uri
 
 
 # Creating an SQLAlchemy instance
@@ -42,18 +42,14 @@ class Profile(db.Model):
     Company = db.Column(db.String(100), unique=False, nullable=False) 
     Location = db.Column(db.String(100), unique=False, nullable=False) 
     requirements = db.Column(db.String(3000), unique=False, nullable=False) 
-    rating = db.Column(db.Integer)
-    experience = db.Column(db.String(3000), unique=False, nullable=False) 
+    rating = db.Column(db.Float)
+    experience = db.Column(db.Float, unique=False, nullable=False) 
     posting_frequency = db.Column(db.Integer)
     
     # repr method represents how one object of this datatable
     # will look like
     def __repr__(self):
         return f"Company : {self.Company}, Job Profile: {self.Job_position}"
-
-
-
-
 
 
 
@@ -96,9 +92,11 @@ def predict():
     input_df = pd.DataFrame(columns = columns)
 
     for j in range(len(x_in)):
-        input_df.loc[0, columns[j]] = x_in[j]
-    
-    print(input_df['Job_position'].values[0])
+        input_df.loc[0, columns[j]] = x_in[j]    
+        if columns[j] in ['rating', 'experience', 'posting_frequency']:
+            col = columns[j]
+            input_df[col] = pd.to_numeric(input_df[col])
+
 
     p = Profile(Job_position = input_df['Job_position'].values[0], Company=input_df['Company'].values[0], 
                 Location=input_df['Location'].values[0], requirements = input_df['requirements'].values[0],
@@ -117,8 +115,10 @@ def predict():
 
     pred = lgbmreg.predict(train_data[:, :159])
     prediction = np.round(np.exp(pred), 2)
-
+    
     return render_template('index.html', prediction_text='Your predicted annual salary is {}'.format(prediction[0]))
+
+
 
 if __name__ == '__main__':
  app.run(debug=True)
