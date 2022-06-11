@@ -1,7 +1,4 @@
 import numpy as np
-from nltk.stem import WordNetLemmatizer
-import nltk
-lemmatizer = WordNetLemmatizer()
 
 class Word2VecVectorizer:
   def __init__(self, model):
