@@ -9,7 +9,6 @@ astroid==2.6.6
 asttokens==2.0.5
 atomicwrites==1.4.0
 attrs==21.4.0
-autopep8==1.6.0
 Babel==2.9.1
 backcall==0.2.0
 beautifulsoup4==4.11.1
@@ -35,7 +34,6 @@ docutils==0.17.1
 entrypoints==0.4
 executing==0.8.3
 fastjsonschema==2.15.1
-flake8==3.9.2
 Flask==2.1.2
 Flask-Cors==3.0.10
 Flask-Migrate==3.1.0
