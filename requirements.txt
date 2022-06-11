@@ -24,8 +24,6 @@ charset-normalizer==2.0.12
 click==8.0.4
 cloudpickle==2.0.0
 colorama==0.4.4
-conda==4.12.0
-conda-package-handling==1.8.1
 cookiecutter==1.7.3
 cryptography==37.0.2
 cycler==0.11.0
@@ -64,12 +62,6 @@ jinja2-time==0.2.0
 joblib==1.1.0
 json5==0.9.6
 jsonschema==4.4.0
-jupyter-client==6.1.12
-jupyter-core==4.10.0
-jupyter-server==1.13.5
-jupyterlab==3.3.2
-jupyterlab-pygments==0.1.2
-jupyterlab-server==2.12.0
 keyring==23.4.0
 kiwisolver==1.4.2
 lazy-object-proxy==1.6.0
