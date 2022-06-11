@@ -17,7 +17,10 @@ from flask_migrate import Migrate, migrate
 app = Flask(__name__)
 
 # adding configuration for using a sqlite database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://fiierpbusgjenc:f6474850db3382fa033ed1523ca80883d4276e7c385e496cb4c12798673defa4@ec2-52-44-13-158.compute-1.amazonaws.com:5432/dcvt3cgd5ge5nc'
 
 
 # Creating an SQLAlchemy instance
