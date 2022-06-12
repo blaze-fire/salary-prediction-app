@@ -55,9 +55,9 @@ class Profile(db.Model):
 
 
 #load glove embeddings
-filename = 'utils/glove_50d.gs'
+filename = 'utils/vector.kv'
 
-model = KeyedVectors.load(filename, mmap='r')
+model = KeyedVectors.load(filename)
 
 def glove_embedded(X, col,train_data):
   vectorizer = Word2VecVectorizer(model)
