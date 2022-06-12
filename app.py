@@ -18,13 +18,13 @@ from flask_migrate import Migrate, migrate
 app = Flask(__name__)
 
 # adding configuration for using a sqlite database
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 
-uri = os.getenv("DATABASE_URL")  # or other relevant config var
-if uri and uri.startswith("postgres://"):
-    uri = uri.replace("postgres://", "postgresql://", 1)
+# uri = os.getenv("DATABASE_URL")  # or other relevant config var
+# if uri and uri.startswith("postgres://"):
+#     uri = uri.replace("postgres://", "postgresql://", 1)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = uri
+# app.config['SQLALCHEMY_DATABASE_URI'] = uri
 
 
 # Creating an SQLAlchemy instance
@@ -42,9 +42,9 @@ class Profile(db.Model):
     Company = db.Column(db.String(100), unique=False, nullable=False) 
     Location = db.Column(db.String(100), unique=False, nullable=False) 
     requirements = db.Column(db.String(3000), unique=False, nullable=False) 
-    rating = db.Column(db.Float)
+    rating = db.Column(db.Float, unique=False)
     experience = db.Column(db.Float, unique=False, nullable=False) 
-    posting_frequency = db.Column(db.Integer)
+    posting_frequency = db.Column(db.Integer, unique=False)
     
     # repr method represents how one object of this datatable
     # will look like
@@ -100,14 +100,14 @@ def predict():
 
     p = Profile(Job_position = input_df['Job_position'].values[0], Company=input_df['Company'].values[0], 
                 Location=input_df['Location'].values[0], requirements = input_df['requirements'].values[0],
-                rating = input_df['rating'].values[0], experience = input_df['experience'].values[0], 
-                posting_frequency=input_df['posting_frequency'].values[0])
+                rating = float(input_df['rating'].values[0]), experience = float(input_df['experience'].values[0]), 
+                posting_frequency= int(input_df['posting_frequency'].values[0]))
+
 
     db.session.add(p)
     db.session.commit()
 
     input_df = Preprocess()(input_df)
-
     train_data = input_df.select_dtypes(exclude='object').values
     
     for col in input_df.select_dtypes(include='object').columns:
