@@ -37,8 +37,7 @@
         Location          : text field                                                             <br>
         Requirements      : text field                                                             <br>
         Rating            : Any integer (0 - 5)                                                    <br> 
-        Net Experience    : Any positive integer                                                   <br>
-        Posting Frequency (Number of times you saw the ad on various sites) : Any positive integer <br>
+        Experience        : text field from JD                                                   <br>
     </pre>
       <!-- Main Input For Receiving Query to our ML -->
       <form action="{{ url_for('predict')}}" method="post">
@@ -73,18 +72,11 @@
           placeholder="Rating(0-5)"
         />
         <input
-          type="number"
+          type="text"
           name="experience"
-          step="0.1"
           placeholder="Experience"
-        />
-        <input
-          type="number"
-          name="posting_frequency"
-          placeholder="Job Posting Frequency"
           required="required"
         />
-
         <button type="submit" class="btn btn-primary btn-block btn-large">
           Predict
         </button>

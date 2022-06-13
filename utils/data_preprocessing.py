@@ -4,11 +4,7 @@ import re
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import nltk
-nltk.download('stopwords')
-nltk.download('punkt')
-nltk.download('wordnet')
 lemmatizer = WordNetLemmatizer()
-
 
 class Preprocess:
 
@@ -21,28 +17,14 @@ class Preprocess:
         return text
     
     def clean_data(self, df):
-        #Some company posted for the same profile many times after a gap of few days   
-        # we can store this information in the column 'posting frequency'
-        # calculate posting frequency on the basis of company
-        freq = df['Company'].value_counts()
-
-        df.drop_duplicates(inplace=True)
-        df.reset_index(drop=True, inplace=True)
-
-        df['posting_frequency'] = df['Company'].map(freq)
-
-        # those not repeated will be null, therefore fill them as 1
-        df['posting_frequency'].fillna(1, inplace=True)
-
-        # We just deleted duplicates but we still see multiple entries for some companies
-        # It looks like recently posted jobs with new tag are causing this, 
-        # lets remove them
+       
         df['Job_position'] = df['Job_position'].apply(lambda x: str(x).replace('\nnew','').lower())
 
-        df['rating'] = pd.to_numeric(df['rating'])
+        df.replace('na', np.nan, inplace=True)
+        df['rating'] = df['rating'].astype('float')
+
 
         return df
-
 
 
     def work_location(self, df):
@@ -59,6 +41,7 @@ class Preprocess:
             else:
                 work_type.append(0)
 
+
         df['work_category'] = work_type
 
         return df
@@ -71,7 +54,10 @@ class Preprocess:
         education_dict = {'bachelor':1, 'master':2, 'graduate':3}
         for j in range(len(df)):
             
-            if re.findall(r'(graduate|bachelor|master)', df['requirements'][j].lower()):
+            if re.findall(r'(graduate|bachelor|master)', str(df['experience'][j]).lower()):
+                education_list.append( education_dict[re.search(r'(graduate|bachelor|master)', df['experience'][j].lower()).group()] )
+            
+            elif re.findall(r'(graduate|bachelor|master)', df['requirements'][j].lower()):
                 education_list.append( education_dict[re.search(r'(graduate|bachelor|master)', df['requirements'][j].lower()).group()] )
             
             else:
@@ -98,7 +84,6 @@ class Preprocess:
             else:
                 seniority_list.append(0)
 
-        
         df['job_title'] = seniority_list
 
         return df
@@ -117,7 +102,7 @@ class Preprocess:
             counter = 0
             
             for i in states_list:
-                if re.findall(i, df['Location'][j].lower()):
+                if re.findall(i, str(df['Location'][j]).lower()):
                     job_states.append(states_list.index(i))
                     counter = 1
                     break
@@ -145,7 +130,7 @@ class Preprocess:
             counter = 0
             
             for i in cities_list:
-                if re.findall(i, df['Location'][j].lower()):
+                if re.findall(i, str(df['Location'][j]).lower()):
                     job_cities.append(cities_list.index(i))
                     counter = 1
                     break
@@ -157,27 +142,6 @@ class Preprocess:
         
         return df
     
-    
-
-
-    def analyze_skills(self, df):
-        key_df = pd.read_csv('utils/keywords.csv')
-        
-        for col in key_df.columns:
-            df[col] = np.zeros(len(df), dtype='int')
-            
-        for j in range(len(df)):
-            for col in key_df.columns:
-                skill_set = list(key_df[col].dropna().values)
-                skills = '|'.join(skill_set)
-                if re.findall(skills, df['requirements'][j].lower()):
-                    df.loc[j, col] += 1
-                
-                if re.findall(skills, df['Job_position'][j].lower()):
-                    df.loc[j, col] += 1
-            
-        return df
-    
 
     def final_operations(self, df):
     
@@ -186,8 +150,11 @@ class Preprocess:
         df['Job_position'] = df['Job_position'].apply(lambda x: self.preprocess_text(str(x)))
         df['requirements'] = df['requirements'].fillna('')
         df['requirements'] = df['requirements'].apply(lambda x: self.preprocess_text(str(x)))
-        df['job_descr_len'] = df['requirements'].apply(lambda x: 0 if not x else len(x))
+        
+        df['experience'] = df['experience'].fillna('')
+        df['experience'] = df['experience'].apply(lambda x: self.preprocess_text(str(x)))
         df.drop(['Location'], axis=1, inplace=True)
+
 
         return df
     
@@ -198,6 +165,5 @@ class Preprocess:
         df = self.seniority(df)
         df = self.get_states(df)
         df = self.city(df)
-        df = self.analyze_skills(df)
         df = self.final_operations(df)
         return df
