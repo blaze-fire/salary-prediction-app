@@ -6,7 +6,6 @@ from flask_sqlalchemy import SQLAlchemy
 from pickle import load
 from scipy.sparse import hstack
 import os
-import re
 
 # Import for Migrations
 from flask_migrate import Migrate, migrate
@@ -31,7 +30,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 # Models
-class JobData(db.Model):
+class Profile(db.Model):
     # Id : Field which stores unique id for every row in
 
     id = db.Column(db.Integer, primary_key=True)
@@ -55,7 +54,7 @@ def home():
 # function to render index page
 @app.route('/show')
 def index():
-    profiles = JobData.query.all()
+    profiles = Profile.query.all()
     return render_template('show.html', profiles=profiles)
 
 
@@ -73,7 +72,7 @@ def predict():
             
     input_df['rating'] = pd.to_numeric(input_df['rating'])
 
-    p = JobData(Job_position = input_df['Job_position'].values[0], Company=input_df['Company'].values[0], 
+    p = Profile(Job_position = input_df['Job_position'].values[0], Company=input_df['Company'].values[0], 
                 Location=input_df['Location'].values[0], requirements = input_df['requirements'].values[0],
                 rating = float(input_df['rating'].values[0]), experience = input_df['experience'].values[0], 
                 )
