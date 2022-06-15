@@ -1,0 +1,115 @@
+@import url("https://fonts.googleapis.com/css?family=Spartan&display=swap");
+
+.heading,
+.subheading {
+    color: #1e0eb0e3;
+    font-weight: bold;
+    position: relative;
+    background-color: #f8f4e5;
+    width: 300px;
+    height: 40px;
+    border: none;
+    text-align: center;
+}
+
+body {
+    background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/38816/image-from-rawpixel-id-2044837-jpeg.jpg");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    font-size: 12pt;
+    font-family: "Spartan";
+    color: #2a293e;
+}
+
+.instructions {
+    width: 800px;
+    height: 350px;
+    background-color: #f8f4e5;
+    flex-direction: column;
+    color: #ea351dfe;
+    font-size: 18px;
+}
+
+label {
+    margin-top: 25px;
+}
+
+label,
+input,
+textarea {
+    display: block;
+    width: 100%;
+    font-size: 12pt;
+    line-height: 24pt;
+    font-family: "Spartan";
+    font-weight: bold;
+}
+
+em {
+    color: #f45702;
+    font-weight: bold;
+}
+
+span {
+    font-size: 8pt;
+}
+
+em {
+    color: #f45702;
+    font-weight: bold;
+}
+
+
+input,
+textarea {
+    border: none;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+    background: #f8f4e5;
+    padding-left: 5px;
+    outline: none;
+}
+
+input:focus,
+textarea:focus {
+    border: 1px solid #6bd4b1;
+}
+
+textarea {
+    resize: none;
+}
+
+button {
+    display: block;
+    float: left;
+    line-height: 30pt;
+    margin-top: 20px;
+    margin-bottom: 50px;
+    font-size: 18px;
+    padding: 0 20px;
+    border: none;
+    background: #f45702;
+    color: white;
+    letter-spacing: 2px;
+    transition: .2s all ease-in-out;
+    border-bottom: 2px solid transparent;
+    outline: none;
+}
+
+button:hover {
+    background: inherit;
+    color: #f45702;
+    border-bottom: 2px solid #f45702;
+}
+
+::selection {
+    background: #ffc7b8;
+}
