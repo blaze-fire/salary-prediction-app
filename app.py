@@ -77,6 +77,12 @@ def download_data():
     for data in profiles:
         df.append([data.Job_position, data.Company, data.Location, data.requirements, data.rating, data.experience])
 
+
+    # To view data in a jupyter notebook
+    # import pandas as pd
+    # columns = ['Job_position', 'Company', 'Location', 'requirements', 'rating', 'experience']
+    # x = pd.read_csv('export.csv', names=columns)
+
     excel.init_excel(app)
     extension_type = "csv"
     filename = "export" + "." + extension_type
