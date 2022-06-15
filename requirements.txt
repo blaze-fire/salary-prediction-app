@@ -22,3 +22,4 @@ wheel==0.37.1
 xgboost==1.6.1
 matplotlib==3.5.2
 seaborn==0.11.2
+flask_excel==0.0.7
