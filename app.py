@@ -4,7 +4,6 @@ import pandas as pd
 from utils.data_preprocessing import Preprocess
 from flask_sqlalchemy import SQLAlchemy
 from pickle import load
-import matplotlib.pyplot as plt
 from scipy.sparse import hstack
 import os
 

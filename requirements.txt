@@ -20,3 +20,5 @@ scipy==1.8.1
 SQLAlchemy==1.4.37
 wheel==0.37.1
 xgboost==1.6.1
+matplotlib==3.5.2
+seaborn==0.11.2
