@@ -193,8 +193,6 @@ def predict():
 
     pred = model.predict(train_stack)
 
-    print(pred)
-    
     prediction = np.round(pred, 2)
 
     input_df['avg_yearly_sal'] = prediction[0]

@@ -3,7 +3,6 @@ import numpy as np
 import re
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-import nltk
 lemmatizer = WordNetLemmatizer()
 
 class Preprocess:
@@ -11,7 +10,10 @@ class Preprocess:
     def preprocess_text(self, text):
         text = text.lower()
         text = re.sub('[^a-zA-Z]', ' ', text)
-        text = ' '.join([word for word in text.split() if not word in set(stopwords.words('english'))])
+        
+        stopwords_dict = {word: 1 for word in stopwords.words("english")}
+        text = " ".join([word for word in text.split() if word not in stopwords_dict])
+           
         text = ' '.join([lemmatizer.lemmatize(w) for w in text.split()])
 
         return text
