@@ -10,6 +10,7 @@ import os
 import io
 import base64
 
+import flask_excel as excel
 import re
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -58,17 +59,29 @@ class Profile(db.Model):
         return f"Company : {self.Company}, Job Profile: {self.Job_position}"
 
 
+# function to render index page
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# function to render index page
 
-
-@app.route('/show')
-def index():
+#function to download data as array
+@app.route('/download', methods=['GET'])
+def download_data():
     profiles = Profile.query.all()
-    return render_template('show.html', profiles=profiles)
+    columns = ['Job_position', 'Company', 'Location',
+               'requirements', 'rating', 'experience']
+
+
+    df = []
+    for data in profiles:
+        df.append([data.Job_position, data.Company, data.Location, data.requirements, data.rating, data.experience])
+
+    excel.init_excel(app)
+    extension_type = "csv"
+    filename = "export" + "." + extension_type
+    return excel.make_response_from_array(df, file_type=extension_type, file_name=filename)
+
 
 
 def plotView(input_df):
@@ -80,8 +93,7 @@ def plotView(input_df):
     df = df[df['avg_yearly_sal'] > 0]
     sal = df['avg_yearly_sal']
     sal.reset_index(drop=True, inplace=True)
-    sal = sal.append(
-        pd.Series({'avg_yearly_sal': predictedSal}), ignore_index=True)
+    sal = sal.append(pd.Series({'avg_yearly_sal': predictedSal}), ignore_index=True)
 
     # Plot Salary Distribution
     fig = Figure(figsize=(10, 15))
