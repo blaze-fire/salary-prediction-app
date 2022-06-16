@@ -10,8 +10,12 @@ import os
 import io
 import base64
 
+#To download the data from database as csv
 import flask_excel as excel
+
 import re
+
+#for plotting
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import seaborn as sns

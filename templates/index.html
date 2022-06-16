@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>ML API</title>
+    <title>Salary Predictor</title>
     <link
       rel="stylesheet"
       type="text/css"
@@ -13,14 +13,16 @@
   <body>
     <div class="login">
       <h1 class="heading">Salary Prediction</h1>
+     
       <pre class="instructions"> 
         Job position      : text field                                                             <br>
         Company           : text field                                                             <br>
         Location          : text field                                                             <br>
         Requirements      : text field                                                             <br>
-        Rating            : Any integer (0 - 5)                                                    <br> 
-        Experience        : text field from JD                                                     <br>
+        Rating            : Any Number (0 - 5)                                                     <br> 
+        Experience        : text field                                                             <br>
       </pre>
+
       <!-- Main Input For Receiving Query to our ML -->
       <form action="{{ url_for('predict')}}" method="post">
         <label for="Job_position">Job Position <em>&#x2a</em></label>
