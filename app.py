@@ -73,9 +73,6 @@ def home():
 @app.route('/download', methods=['GET'])
 def download_data():
     profiles = Profile.query.all()
-    columns = ['Job_position', 'Company', 'Location',
-               'requirements', 'rating', 'experience']
-
 
     df = []
     for data in profiles:
