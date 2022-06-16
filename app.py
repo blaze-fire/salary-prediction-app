@@ -43,7 +43,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = uri
 db = SQLAlchemy(app)
 
 # Settings for migrations
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, render_as_batch=True)                                #https://stackoverflow.com/a/67277190/14204371
 
 # Models
 class Profile(db.Model):
