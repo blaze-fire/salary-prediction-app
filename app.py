@@ -44,8 +44,6 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 # Models
-
-
 class Profile(db.Model):
     # Id : Field which stores unique id for every row in
 
