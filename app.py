@@ -43,16 +43,16 @@ app.config['SQLALCHEMY_DATABASE_URI'] = uri
 db = SQLAlchemy(app)
 
 # Settings for migrations
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, render_as_batch=True)                                #https://stackoverflow.com/a/67277190/14204371
 
 # Models
 class Profile(db.Model):
     # Id : Field which stores unique id for every row in
 
     id = db.Column(db.Integer, primary_key=True)
-    Job_position = db.Column(db.String(100), unique=False, nullable=False)
-    Company = db.Column(db.String(100), unique=False, nullable=False)
-    Location = db.Column(db.String(100), unique=False, nullable=False)
+    Job_position = db.Column(db.String(1000), unique=False, nullable=False)
+    Company = db.Column(db.String(1000), unique=False, nullable=False)
+    Location = db.Column(db.String(1000), unique=False, nullable=False)
     requirements = db.Column(db.String(10000), unique=False, nullable=False)
     rating = db.Column(db.Float, unique=False)
     experience = db.Column(db.String(10000), unique=False, nullable=False)
