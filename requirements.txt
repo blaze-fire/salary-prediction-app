@@ -23,3 +23,4 @@ xgboost==1.6.1
 matplotlib==3.5.2
 seaborn==0.11.2
 flask_excel==0.0.7
+python-dotenv==0.20.0

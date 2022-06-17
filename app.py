@@ -30,11 +30,22 @@ from flask_migrate import Migrate, migrate
 app = Flask(__name__)
 
 # adding configuration for using a sqlite database
+<<<<<<< HEAD
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  #to run locally
 
 # uri = os.getenv("DATABASE_URL")  # or other relevant config var
 # if uri and uri.startswith("postgres://"):
 #     uri = uri.replace("postgres://", "postgresql://", 1)
+=======
+
+# uri = os.environ.get("LOCAL_URL")   #locally
+
+
+#heroku
+uri = os.environ.get("DATABASE_URL")    
+if uri and uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+>>>>>>> 833e5502627946350c1ffcc03f73e172be010bc2
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = uri
 
@@ -73,9 +84,6 @@ def home():
 @app.route('/download', methods=['GET'])
 def download_data():
     profiles = Profile.query.all()
-    columns = ['Job_position', 'Company', 'Location',
-               'requirements', 'rating', 'experience']
-
 
     df = []
     for data in profiles:
