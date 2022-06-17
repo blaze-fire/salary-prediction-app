@@ -30,15 +30,16 @@ from flask_migrate import Migrate, migrate
 app = Flask(__name__)
 
 # adding configuration for using a sqlite database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  #to run locally
 
-print("URL", os.environ.get("LOCAL_URL"))
+# uri = os.environ.get("LOCAL_URL")   #locally
 
-# uri = os.environ.get("LOCAL_URL")
-# if uri and uri.startswith("postgres://"):
-#     uri = uri.replace("postgres://", "postgresql://", 1)
 
-# app.config['SQLALCHEMY_DATABASE_URI'] = uri
+#heroku
+uri = os.environ.get("DATABASE_URL")    
+if uri and uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
 
 
 # Creating an SQLAlchemy instance
