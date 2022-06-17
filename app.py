@@ -32,9 +32,9 @@ app = Flask(__name__)
 # adding configuration for using a sqlite database
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  #to run locally
 
-uri = 'postgresql://pbcsenrjrgteuo:5333309879d8340c32d1a8e26ca61292577ee2cd870755e25c22971237dfa635@ec2-23-23-182-238.compute-1.amazonaws.com:5432/dd4d5ul6iejfkl'
-# if uri and uri.startswith("postgres://"):
-#     uri = uri.replace("postgres://", "postgresql://", 1)
+uri = os.environ.get("DATABASE_URL")
+if uri and uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
 
