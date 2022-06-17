@@ -22,7 +22,6 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import seaborn as sns
 
-
 # Import for Migrations
 from flask_migrate import Migrate, migrate
 
@@ -30,9 +29,7 @@ from flask_migrate import Migrate, migrate
 app = Flask(__name__)
 
 # adding configuration for using a sqlite database
-
 # uri = os.environ.get("LOCAL_URL")   #locally
-
 
 #heroku
 uri = os.environ.get("DATABASE_URL")    
@@ -40,7 +37,6 @@ if uri and uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
-
 
 # Creating an SQLAlchemy instance
 db = SQLAlchemy(app)
@@ -95,70 +91,17 @@ def download_data():
 
 
 
-def plotView(input_df):
-
-    # predicted salary from '/predict'
-    predictedSal = input_df['avg_yearly_sal'].values[0]
-
-    df = pd.read_csv(r'data/data_for_eda.csv')
-    df = df[df['avg_yearly_sal'] > 0]
-    sal = df['avg_yearly_sal']
-    sal.reset_index(drop=True, inplace=True)
-    sal = sal.append(pd.Series({'avg_yearly_sal': predictedSal}), ignore_index=True)
-
-    # Plot Salary Distribution
-    fig = Figure(figsize=(10, 15))
-    ax1 = fig.add_subplot(2, 1, 1)
-    ax1.set_title("You vs Others")
-    ax1.set_xlabel("Annual Average Salary (in crores)")
-    ax1.set_ylabel("Count of Number of People")
-    ax1.grid()
-
-    # Generate bins with interval of 100000
-    bins = np.arange(10000, 10000000, 100000)
-    sns.histplot(ax=ax1, x=sal, bins=bins)
-
-    # To get the first index of the bin where it is given than the current predicted salary
-    idx = np.nonzero(bins > predictedSal)[0][0]
-    ax1.patches[idx].set_facecolor('salmon')
-    ax1.annotate(format(
-                    f'Rs. {predictedSal}'),
-                    (ax1.patches[idx].get_x() + ax1.patches[idx].get_width() / 2., ax1.patches[idx].get_height()),
-                    ha='center', 
-                    va='center',
-                    xytext=(0, 100),
-                    arrowprops=dict
-                                (
-                                    arrowstyle="->", 
-                                    connectionstyle="arc3"
-                                ), 
-                    textcoords='offset points'
-                )
-
-    # ------------------------------------------------------------------------------------------------------------------------------
-
-    # Skills vs salary plot (Bassically plot the average salary for the skills mentioned in the JD)
-    text = input_df['requirements'].values[0]
-    with open('utils/skills.txt') as f:
-        skills = f.read()
-    f.close()
-
-    skills = skills.split(',')
-    input_skills = list(set(re.findall(r"(?=(\b" + '\\b|\\b'.join(skills) + r"\b))", text)))
-
-    df_skills = list(df['Job_position'].unique())
-    input_skills = list(set(input_skills) & set(df_skills))
+def plot_skills(input_skills, df, fig):
+    plot_df = pd.DataFrame(columns=['skill', 'avg_yearly_sal'])
 
     # To build the dataframe of average salaries of skills mentioned in the requirements section
-    plot_df = pd.DataFrame(columns=['skill', 'avg_yearly_sal'])
     for i in input_skills:
         avg_sal = df[df['Job_position'] == i]['avg_yearly_sal'].values.mean()
-        plot_df = plot_df.append(
-                                pd.Series({'skill': i, 'avg_yearly_sal': avg_sal}), 
-                                ignore_index=True
-                                )
+        plot_df = pd.concat([plot_df, pd.DataFrame({'skill': [i], 'avg_yearly_sal': [avg_sal]})], ignore_index=True)
 
     plot_df.sort_values(by='avg_yearly_sal', inplace=True)
+    
+    print(plot_df)
 
     ax2 = fig.add_subplot(2, 1, 2)
     ax2.set_title("Average pay with these skills")
@@ -177,7 +120,82 @@ def plotView(input_df):
 
     ax2.set_ylabel("Annual Average Salary")
 
+    return fig
+
+
+
+def plotView(input_df):
+
+    fig = Figure(figsize=(10, 15))
+
+    df = pd.read_csv(r'data/data_for_eda.csv')
+    df = df[df['avg_yearly_sal'] > 0]
+
+
     # ------------------------------------------------------------------------------------------------------------------------------
+
+
+    # Skills vs salary plot (Bassically plot the average salary for the skills mentioned in the JD)
+
+    with open('utils/skills.txt') as f:
+        skills = f.read()
+    f.close()
+    skills = skills.split(',')
+
+    text = input_df['requirements'].values[0]
+    input_skills = list(set(re.findall(r"(?=(\b" + '\\b|\\b'.join(skills) + r"\b))", text)))
+    df_skills = list(df['Job_position'].unique())
+
+    # if common skills in input skilss and database print the plot else skip
+    input_skills = list(set(input_skills) & set(df_skills))
+    if input_skills:
+        ax1 = fig.add_subplot(2, 1, 1)
+        fig = plot_skills(input_skills, df, fig)
+
+    else:
+        ax1 = fig.add_subplot(1, 1, 1)
+
+
+    # ------------------------------------------------------------------------------------------------------------------------------
+
+
+    # Plot Salary Distribution
+
+    sal = df['avg_yearly_sal']
+    sal.reset_index(drop=True, inplace=True)
+    
+    # predicted salary from '/predict'
+    predictedSal = input_df['avg_yearly_sal'].values[0]
+    sal = pd.concat([sal , pd.Series({'avg_yearly_sal': predictedSal})], axis=0, ignore_index=True)
+
+    # Generate bins with interval of 100000
+    bins = np.arange(10000, 10000000, 100000)
+    sns.histplot(ax=ax1, x=sal, bins=bins)
+
+    # To get the first index of the bin where it is given than the current predicted salary
+    idx = np.nonzero(bins > predictedSal)[0][0]
+    ax1.patches[idx].set_facecolor('salmon')
+    ax1.annotate(format(
+                    f'Rs. {predictedSal}'),
+                    (ax1.patches[idx].get_x() + ax1.patches[idx].get_width() / 2., ax1.patches[idx].get_height()),
+                    ha='center', 
+                    va='center',
+                    xytext=(0, 100),
+                    arrowprops=dict(
+                                    arrowstyle="->", 
+                                    connectionstyle="arc3"
+                                ), 
+                    textcoords='offset points'
+                )
+
+    ax1.set_title("You vs Others")
+    ax1.set_xlabel("Annual Average Salary (in crores)")
+    ax1.set_ylabel("Count of Number of People")
+    ax1.grid()
+
+
+    # ------------------------------------------------------------------------------------------------------------------------------
+
 
     # Convert plot to PNG image
     pngImage = io.BytesIO()
@@ -188,6 +206,43 @@ def plotView(input_df):
     pngImageB64String += base64.b64encode(pngImage.getvalue()).decode('utf8')
 
     return render_template("image.html", image=pngImageB64String, prediction=predictedSal)
+
+
+
+def addData(df):
+
+    p = Profile(
+        Job_position = df['Job_position'].values[0],
+        Company      = df['Company'].values[0],
+        Location     = df['Location'].values[0],
+        requirements = df['requirements'].values[0],
+        rating       = float(df['rating'].values[0]),
+        experience   = df['experience'].values[0],
+    )
+
+    db.session.add(p)
+    db.session.commit()
+
+
+
+def make_prediction(df):
+    # load the model
+    model = load(open('models/model.pkl', 'rb'))
+
+    # load the scaler
+    transformer = load(open('models/scaler.pkl', 'rb'))
+
+    processed_df = Preprocess()(df)
+    text_data = transformer.transform(processed_df)
+    num_cols = list(processed_df.select_dtypes(exclude='object').columns)
+
+    train_stack = hstack((processed_df[num_cols].values, text_data))
+    pred = model.predict(train_stack)
+    prediction = np.round(pred, 2)[0]
+
+    return prediction
+
+
 
 
 @app.route('/predict', methods=['POST'])
@@ -205,33 +260,14 @@ def predict():
 
     input_df['rating'] = pd.to_numeric(input_df['rating'])
 
-    p = Profile(
-            Job_position=input_df['Job_position'].values[0],
-            Company=input_df['Company'].values[0],
-            Location=input_df['Location'].values[0],
-            requirements=input_df['requirements'].values[0],
-            rating=float(input_df['rating'].values[0]),
-            experience=input_df['experience'].values[0],
-        )
+    # Add new data to database
+    addData(input_df)
 
-    db.session.add(p)
-    db.session.commit()
+    # Make prediction
+    prediction = make_prediction(input_df)
+    print('Prediction: ', prediction)
 
-    # load the model
-    model = load(open('models/model.pkl', 'rb'))
-
-    # load the scaler
-    transformer = load(open('models/scaler.pkl', 'rb'))
-
-    processed_df = Preprocess()(input_df)
-    text_data = transformer.transform(processed_df)
-    num_cols = list(processed_df.select_dtypes(exclude='object').columns)
-
-    train_stack = hstack((processed_df[num_cols].values, text_data))
-    pred = model.predict(train_stack)
-    prediction = np.round(pred, 2)
-
-    input_df['avg_yearly_sal'] = prediction[0]
+    input_df['avg_yearly_sal'] = prediction
     return plotView(input_df)
 
 
