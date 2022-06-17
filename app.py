@@ -28,14 +28,14 @@ from flask_migrate import Migrate, migrate
 
 app = Flask(__name__)
 
-# adding configuration for using a sqlite database
 # uri = os.environ.get("LOCAL_URL")   #locally
-
 #heroku
 uri = os.environ.get("DATABASE_URL")    
 if uri and uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
 
+
+# adding configuration for using a sqlite database
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
 
 # Creating an SQLAlchemy instance
@@ -101,8 +101,6 @@ def plot_skills(input_skills, df, fig):
 
     plot_df.sort_values(by='avg_yearly_sal', inplace=True)
     
-    print(plot_df)
-
     ax2 = fig.add_subplot(2, 1, 2)
     ax2.set_title("Average pay with these skills")
     ax2.grid()

@@ -31,6 +31,8 @@
           name="Job_position"
           id="Job_position"
           required="required"
+          maxlength="1000"
+          minlength="5"
         />
 
         <label for="Company"> Company Name <em>&#x2a</em></label>
@@ -38,6 +40,7 @@
           type="text"
           name="Company"
           id="Company"
+          maxlength="1000"
           required="required"
         />
         
@@ -47,10 +50,11 @@
           name="Location"
           id="Location"
           required="required"
+          maxlength="1000"
         />
 
         <label for="requirements">Job Requirements <em>&#x2a</em></label>
-        <textarea name="requirements" id="requirements" cols="" rows="5" required="required" minlength="10" maxlength="3000"></textarea>
+        <textarea name="requirements" id="requirements" cols="" rows="5" required="required" minlength="10" maxlength="10000"></textarea>
         
         <label for="rating">Rating(0-5)</label>
         <input
@@ -63,7 +67,7 @@
         />
 
         <label for="experience">Experience <em>&#x2a</em></label>
-        <textarea name="experience" id="experience" cols="" rows="5" required="required" minlength="10" maxlength="3000"></textarea>
+        <textarea name="experience" id="experience" cols="" rows="5" required="required" minlength="10" maxlength="10000"></textarea>
 
         <button type="submit">
           Predict
