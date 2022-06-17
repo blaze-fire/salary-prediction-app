@@ -30,13 +30,6 @@ from flask_migrate import Migrate, migrate
 app = Flask(__name__)
 
 # adding configuration for using a sqlite database
-<<<<<<< HEAD
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  #to run locally
-
-# uri = os.getenv("DATABASE_URL")  # or other relevant config var
-# if uri and uri.startswith("postgres://"):
-#     uri = uri.replace("postgres://", "postgresql://", 1)
-=======
 
 # uri = os.environ.get("LOCAL_URL")   #locally
 
@@ -45,9 +38,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  #to run locally
 uri = os.environ.get("DATABASE_URL")    
 if uri and uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
->>>>>>> 833e5502627946350c1ffcc03f73e172be010bc2
 
-# app.config['SQLALCHEMY_DATABASE_URI'] = uri
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
 
 
 # Creating an SQLAlchemy instance
@@ -87,7 +79,8 @@ def download_data():
 
     df = []
     for data in profiles:
-        df.append([data.Job_position, data.Company, data.Location, data.requirements, data.rating, data.experience])
+        df.append([data.Job_position, data.Company, data.Location, 
+                   data.requirements, data.rating, data.experience])
 
 
     # To view data in a jupyter notebook
@@ -128,10 +121,19 @@ def plotView(input_df):
     # To get the first index of the bin where it is given than the current predicted salary
     idx = np.nonzero(bins > predictedSal)[0][0]
     ax1.patches[idx].set_facecolor('salmon')
-    ax1.annotate(format(f'Rs. {predictedSal}'),
-                     (ax1.patches[idx].get_x() + ax1.patches[idx].get_width() / 2., ax1.patches[idx].get_height()),
-                     ha='center', va='center',
-                     xytext=(0, 100),arrowprops=dict(arrowstyle="->", connectionstyle="arc3"), textcoords='offset points')
+    ax1.annotate(format(
+                    f'Rs. {predictedSal}'),
+                    (ax1.patches[idx].get_x() + ax1.patches[idx].get_width() / 2., ax1.patches[idx].get_height()),
+                    ha='center', 
+                    va='center',
+                    xytext=(0, 100),
+                    arrowprops=dict
+                                (
+                                    arrowstyle="->", 
+                                    connectionstyle="arc3"
+                                ), 
+                    textcoords='offset points'
+                )
 
     # ------------------------------------------------------------------------------------------------------------------------------
 
@@ -162,12 +164,17 @@ def plotView(input_df):
     ax2.set_title("Average pay with these skills")
     ax2.grid()
     ax2 = sns.barplot(y='avg_yearly_sal', x='skill', data=plot_df, ax=ax2)
+
     for p in ax2.patches:
-        ax2.annotate(format(p.get_height(), '.1f'),
-                     (p.get_x() + p.get_width() / 2., p.get_height()),
-                     ha='center', va='center',
-                     xytext=(0, 9),
-                     textcoords='offset points')
+        ax2.annotate(format(
+                            p.get_height(), '.1f'),
+                            (p.get_x() + p.get_width() / 2., p.get_height()),
+                            ha='center', 
+                            va='center',
+                            xytext=(0, 9),
+                            textcoords='offset points'
+                        )
+
     ax2.set_ylabel("Annual Average Salary")
 
     # ------------------------------------------------------------------------------------------------------------------------------
@@ -198,13 +205,14 @@ def predict():
 
     input_df['rating'] = pd.to_numeric(input_df['rating'])
 
-    p = Profile(Job_position=input_df['Job_position'].values[0],
-                Company=input_df['Company'].values[0],
-                Location=input_df['Location'].values[0],
-                requirements=input_df['requirements'].values[0],
-                rating=float(input_df['rating'].values[0]),
-                experience=input_df['experience'].values[0],
-                )
+    p = Profile(
+            Job_position=input_df['Job_position'].values[0],
+            Company=input_df['Company'].values[0],
+            Location=input_df['Location'].values[0],
+            requirements=input_df['requirements'].values[0],
+            rating=float(input_df['rating'].values[0]),
+            experience=input_df['experience'].values[0],
+        )
 
     db.session.add(p)
     db.session.commit()
@@ -220,9 +228,7 @@ def predict():
     num_cols = list(processed_df.select_dtypes(exclude='object').columns)
 
     train_stack = hstack((processed_df[num_cols].values, text_data))
-
     pred = model.predict(train_stack)
-
     prediction = np.round(pred, 2)
 
     input_df['avg_yearly_sal'] = prediction[0]
