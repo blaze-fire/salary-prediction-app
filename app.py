@@ -28,7 +28,9 @@ from flask_migrate import Migrate, migrate
 
 app = Flask(__name__)
 
-# uri = os.environ.get("LOCAL_URL")   #locally
+#locally
+# uri = os.environ.get("LOCAL_URL")   
+
 #heroku
 uri = os.environ.get("DATABASE_URL")    
 if uri and uri.startswith("postgres://"):
@@ -90,21 +92,21 @@ def download_data():
     return excel.make_response_from_array(df, file_type=extension_type, file_name=filename)
 
 
-
+# FUNCTION TO PLOT SKILLS VS SALARY 
 def plot_skills(input_skills, df, fig):
-    plot_df = pd.DataFrame(columns=['skill', 'avg_yearly_sal'])
+    skills_df = pd.DataFrame(columns=['skill', 'avg_yearly_sal'])
 
     # To build the dataframe of average salaries of skills mentioned in the requirements section
     for i in input_skills:
         avg_sal = df[df['Job_position'] == i]['avg_yearly_sal'].values.mean()
-        plot_df = pd.concat([plot_df, pd.DataFrame({'skill': [i], 'avg_yearly_sal': [avg_sal]})], ignore_index=True)
+        skills_df = pd.concat([skills_df, pd.DataFrame({'skill': [i], 'avg_yearly_sal': [avg_sal]})], ignore_index=True)
 
-    plot_df.sort_values(by='avg_yearly_sal', inplace=True)
+    skills_df.sort_values(by='avg_yearly_sal', inplace=True)
     
     ax2 = fig.add_subplot(2, 1, 2)
     ax2.set_title("Average pay with these skills")
     ax2.grid()
-    ax2 = sns.barplot(y='avg_yearly_sal', x='skill', data=plot_df, ax=ax2)
+    ax2 = sns.barplot(y='avg_yearly_sal', x='skill', data=skills_df, ax=ax2)
 
     for p in ax2.patches:
         ax2.annotate(format(
@@ -122,6 +124,7 @@ def plot_skills(input_skills, df, fig):
 
 
 
+# TO SHOW PLOTS 
 def plotView(input_df):
 
     fig = Figure(figsize=(10, 15))
@@ -144,7 +147,7 @@ def plotView(input_df):
     input_skills = list(set(re.findall(r"(?=(\b" + '\\b|\\b'.join(skills) + r"\b))", text)))
     df_skills = list(df['Job_position'].unique())
 
-    # if common skills in input skilss and database print the plot else skip
+    # if common skills in input skills and database print the plot else skip
     input_skills = list(set(input_skills) & set(df_skills))
     if input_skills:
         ax1 = fig.add_subplot(2, 1, 1)
@@ -206,7 +209,7 @@ def plotView(input_df):
     return render_template("image.html", image=pngImageB64String, prediction=predictedSal)
 
 
-
+# TO ADD DATA TO THE DATABASE
 def addData(df):
 
     p = Profile(
@@ -222,12 +225,12 @@ def addData(df):
     db.session.commit()
 
 
-
+# TO MAKE PREDICTION FOR THE INPUT
 def make_prediction(df):
     # load the model
     model = load(open('models/model.pkl', 'rb'))
 
-    # load the scaler
+    # load the transformer
     transformer = load(open('models/scaler.pkl', 'rb'))
 
     processed_df = Preprocess()(df)
@@ -250,7 +253,6 @@ def predict():
 
     columns = ['Job_position', 'Company', 'Location',
                'requirements', 'rating', 'experience']
-
     input_df = pd.DataFrame(columns=columns)
 
     for j in range(len(x_in)):
@@ -264,8 +266,8 @@ def predict():
     # Make prediction
     prediction = make_prediction(input_df)
     print('Prediction: ', prediction)
-
     input_df['avg_yearly_sal'] = prediction
+
     return plotView(input_df)
 
 

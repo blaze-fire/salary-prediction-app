@@ -5,61 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Results</title>
-    <style>
-      body {
-        background-color: lightgoldenrodyellow;
-        padding: 5px 10px;
-        text-align: center;
-        position: center;
-        align-items: center;
-        justify-items: center;
-        display: block;
-        font-size: 20px;
-        margin: auto;
-        cursor: pointer;
-        text-decoration: none;
-      }
-      .image {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        width: 50%;
-      }
-
-      .button {
-        display: block;
-        width: 115px;
-        height: 25px;
-        background: #f45702;
-        padding: 10px;
-        border-radius: 5px;
-        color: white;
-        font-weight: bold;
-        line-height: 25px;
-        margin-top: 30px;
-        margin-bottom: 50px;
-        margin-left: 10px;
-      }
-
-      .predicted_text {
-        color: rgb(0, 208, 7);
-      }
-
-      .heading {
-        position: relative;
-        top: 2%;
-        left: 0;
-        right: 0;
-        margin: auto;
-        text-align: center;
-        width: 700px;
-        height: 40px;
-        background-color: #f8f4e5;
-        margin-top: 40px;
-        margin-bottom: 30px;
-        color: rgb(1, 170, 170);
-      }
-    </style>
+    <link
+    rel="stylesheet"
+    type="text/css"
+    href="{{url_for('static', filename='image_style.css')}}"
+  />
   </head>
   <body>
     <h3 class="heading">
